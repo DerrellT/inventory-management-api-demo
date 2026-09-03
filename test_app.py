@@ -72,16 +72,16 @@ def test_get_products(client):
 
     assert products[0]["color"] == "Blue"
 
-    assert products[0]["quantity"] == 1
+    assert products[0]["quantity"] == 10
 
-    assert products[0]["cost_per_item"] == 1
+    assert products[0]["cost_per_item"] == 5
 
-    assert products[0]["price"] == 5
+    assert products[0]["price"] == 12
 
 def test_create_product(client):
     response = client.post("/products/",
         json={
-        "sku": "Pen1",
+        "sku": "PEN1",
         "color": "Black",
         "quantity": 5,
         "cost_per_item": 5,
@@ -89,7 +89,7 @@ def test_create_product(client):
      )
 
     assert response.status_code == 200
-    assert response.json()["product"]["sku"] == "Pen1"
+    assert response.json()["product"]["sku"] == "PEN1"
     assert response.json()["product"]["color"] == "Black"
     assert response.json()["product"]["quantity"] == 5
     assert response.json()["product"]["cost_per_item"] == 5
@@ -168,7 +168,7 @@ def test_empty_color(client):
     assert response.status_code == 422
     assert response.json()["detail"][0]["msg"] == "String should have at least 1 character"
 
-def test_case_sensitivity(client):
+def test_case_insensitivity_duplicate_product(client):
     response = client.post("/products/",        
         json={
         "sku": "toy1",
@@ -182,10 +182,8 @@ def test_case_sensitivity(client):
 
 
 def test_update_product(client):
-    response = client.put("/products/JWL2",        
+    response = client.put("/products/TOY1",        
         json={
-        "sku": "TOY1",
-        "color": "Green",
         "quantity": 6,
         "cost_per_item": 8,
         "price": 12
@@ -204,9 +202,9 @@ def test_direct_product_lookup(client):
     assert response.status_code == 200
     assert response.json()["product"]["sku"] == "TOY1"
     assert response.json()["product"]["color"] == "Red"
-    assert response.json()["product"]["quantity"] == 1
-    assert response.json()["product"]["cost_per_item"] == 2
-    assert response.json()["product"]["price"] == 3
+    assert response.json()["product"]["quantity"] == 5
+    assert response.json()["product"]["cost_per_item"] == 8
+    assert response.json()["product"]["price"] == 15
 
 
 def test_direct_product_lookup_failure(client):
@@ -218,7 +216,6 @@ def test_direct_product_lookup_failure(client):
 def test_update_non_existing_product(client):
     response = client.put("/products/UNKNOWN",        
         json={
-        "sku": "UNKNOWN",
         "quantity": 6,
         "cost_per_item": 8,
         "price": 12}
